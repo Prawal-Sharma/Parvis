@@ -176,11 +176,5 @@ async def main():
     await assistant.start()
 
 
-async def main():
-    """Main entry point."""
-    assistant = PiJarvis()
-    await assistant.start()
-
-
 if __name__ == "__main__":
     asyncio.run(main())
