@@ -33,9 +33,13 @@ GGML_OPENBLAS=1 make -j4
 
 # Verify build
 echo "✅ Verifying build..."
-if [ -f "./main" ] && [ -f "./stream" ]; then
+if [ -f "./build/bin/whisper-cli" ] && [ -f "./build/bin/main" ]; then
     echo "✅ Whisper.cpp built successfully!"
-    ./main --help | head -10
+    echo "📋 Available binaries:"
+    ls -la ./build/bin/
+    echo ""
+    echo "🧪 Testing whisper-cli:"
+    ./build/bin/whisper-cli --help | head -5
 else
     echo "❌ Build failed - binaries not found"
     exit 1

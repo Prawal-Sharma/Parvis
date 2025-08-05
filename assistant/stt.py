@@ -30,7 +30,7 @@ class WhisperSTT:
         """
         self.model_name = model_name
         self.model_path = Path(f"models/ggml-{model_name}.bin")
-        self.whisper_binary = Path("models/whisper.cpp/main")
+        self.whisper_binary = Path("models/whisper.cpp/build/bin/whisper-cli")
         self.audio = None
         self.is_recording = False
         
@@ -133,7 +133,7 @@ class WhisperSTT:
             
             logger.info(f"Transcribing audio file: {audio_file}")
             
-            # Run Whisper.cpp
+            # Run Whisper.cpp CLI
             cmd = [
                 str(self.whisper_binary),
                 "-m", str(self.model_path),
