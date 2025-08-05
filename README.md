@@ -42,8 +42,9 @@ pi-jarvis/
 ✅ **Phase 3 COMPLETE**: Language Model (TinyLlama 1.1B)  
 ✅ **Phase 4 COMPLETE**: Complete Speech Pipeline  
 ✅ **Phase 5 COMPLETE**: Hot-word Detection ("Parvis")  
-🏗️ **Current Phase**: Phase 6 - Computer Vision  
-📋 **Next**: Integrate YOLOv8 camera vision and object detection
+✅ **Phase 6 COMPLETE**: Computer Vision ("What do you see?")  
+🏗️ **Current Phase**: Phase 7 - Intent System  
+📋 **Next**: Build smart intent recognition for timers, translations, utilities
 
 ### ✅ Completed Components
 - **System Dependencies**: All build tools, audio libraries, Python packages installed
@@ -52,11 +53,12 @@ pi-jarvis/
 - **Text-to-Speech**: eSpeak TTS engine installed and tested
 - **Complete Speech Pipeline**: **STT → LLM → TTS integration working flawlessly**
 - **"Parvis" Wake Word Detection**: **Always-on assistant with hot-word activation**
+- **Computer Vision System**: **YOLOv8 object detection with "What do you see?" support**
 
-### 🎯 Always-On Voice Assistant Ready!
-**MAJOR MILESTONE**: Complete always-on voice assistant working! Says "Parvis" → Assistant activates → Full voice conversation → Resumes listening. Ready for hardware when microphone/speakers connected.
+### 🎯 Complete Multi-Modal AI Assistant Ready!
+**MAJOR MILESTONE**: Full voice + vision assistant operational! Say "Parvis" → Ask "What do you see?" → Get "I can see a book, a cup, and a stop sign" → Continues listening. Complete offline AI assistant ready for hardware!
 
-**Progress**: **5/9 phases complete (56%)**
+**Progress**: **6/9 phases complete (67%)**
 
 See `PHASE_STATUS.md` for detailed phase breakdown and `PROJECT_REFERENCE.md` for technical specifications.
 
