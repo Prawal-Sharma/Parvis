@@ -15,6 +15,7 @@ from pathlib import Path
 
 from .hotword import create_hotword_detector, PORCUPINE_AVAILABLE
 from .pipeline import SpeechPipeline, PipelineMode, ConversationTurn
+from vision.pipeline import VisionPipeline
 
 logger = logging.getLogger(__name__)
 
@@ -24,24 +25,29 @@ class ParvisAssistant:
     
     def __init__(self, 
                  pipeline_mode: PipelineMode = PipelineMode.SIMULATION,
-                 use_mock_hotword: bool = False):
+                 use_mock_hotword: bool = False,
+                 enable_vision: bool = True):
         """Initialize Parvis assistant.
         
         Args:
             pipeline_mode: Speech pipeline mode (hardware/simulation/text_only)
             use_mock_hotword: Use mock hot-word detection for testing
+            enable_vision: Enable computer vision capabilities
         """
         self.pipeline_mode = pipeline_mode
         self.use_mock_hotword = use_mock_hotword
+        self.enable_vision = enable_vision
         self.is_running = False
         
         # Initialize components
         self.speech_pipeline = SpeechPipeline(mode=pipeline_mode)
         self.hotword_detector = None
+        self.vision_pipeline = None
         
         logger.info(f"Initializing Parvis Assistant")
         logger.info(f"  Pipeline mode: {pipeline_mode.value}")
         logger.info(f"  Hot-word mode: {'Mock' if use_mock_hotword else 'Real'}")
+        logger.info(f"  Vision enabled: {enable_vision}")
     
     async def initialize(self) -> bool:
         """Initialize all assistant components.
@@ -72,6 +78,22 @@ class ParvisAssistant:
                 logger.error("Failed to initialize hot-word detector")
                 return False
             logger.info("✅ Hot-word detector ready")
+            
+            # Initialize vision pipeline if enabled
+            if self.enable_vision:
+                logger.info("Initializing vision pipeline...")
+                self.vision_pipeline = VisionPipeline(
+                    use_mock_camera=True,      # Default to mock for now
+                    use_mock_detector=True,    # Default to mock for now
+                    confidence_threshold=0.25
+                )
+                
+                vision_ready = await self.vision_pipeline.initialize()
+                if vision_ready:
+                    logger.info("✅ Vision pipeline ready")
+                else:
+                    logger.warning("⚠️ Vision pipeline failed to initialize - continuing without vision")
+                    self.vision_pipeline = None
             
             logger.info("🎉 Parvis Assistant initialization complete!")
             return True
@@ -113,23 +135,36 @@ class ParvisAssistant:
                     audio_duration=5  # Listen for 5 seconds
                 )
             else:
-                # Simulation/test conversation
+                # Simulation/test conversation with vision support
                 test_inputs = [
                     "Hello Parvis!",
-                    "How are you today?",
+                    "How are you today?", 
                     "What can you help me with?",
-                    "Tell me about yourself"
+                    "Tell me about yourself",
+                    "What do you see?",
+                    "Describe what's in front of you",
+                    "Look around and tell me what's there"
                 ]
                 
                 # Pick a random test input for variety
                 import random
                 test_input = random.choice(test_inputs)
                 
+                # Check if this is a vision request
+                if self._is_vision_request(test_input):
+                    await self._handle_vision_request(test_input)
+                    return
+                
                 turn = await self.speech_pipeline.process_voice_input(
                     simulate_text=test_input
                 )
             
             if turn.success:
+                # Check if the user's input was a vision request
+                if self._is_vision_request(turn.user_text or ""):
+                    await self._handle_vision_request(turn.user_text)
+                    return
+                
                 logger.info(f"✅ Conversation completed successfully:")
                 logger.info(f"   User: {turn.user_text}")
                 logger.info(f"   Parvis: {turn.assistant_text}")
@@ -139,6 +174,67 @@ class ParvisAssistant:
                 
         except Exception as e:
             logger.error(f"Error in conversation: {e}")
+    
+    def _is_vision_request(self, text: str) -> bool:
+        """Check if user input is requesting vision functionality.
+        
+        Args:
+            text: User input text
+            
+        Returns:
+            True if this is a vision request
+        """
+        if not text:
+            return False
+            
+        text_lower = text.lower()
+        vision_keywords = [
+            "what do you see", "what can you see", "describe what you see",
+            "look around", "tell me what you see", "what's in front", 
+            "describe the scene", "what's there", "look at", "vision",
+            "camera", "image", "picture", "see anything"
+        ]
+        
+        return any(keyword in text_lower for keyword in vision_keywords)
+    
+    async def _handle_vision_request(self, user_input: str):
+        """Handle a vision-related request.
+        
+        Args:
+            user_input: User's vision request
+        """
+        logger.info(f"👁️ Vision request detected: '{user_input}'")
+        
+        if not self.vision_pipeline:
+            response = "I'm sorry, my vision system is not available right now."
+            logger.warning("Vision request but no vision pipeline available")
+        else:
+            try:
+                logger.info("📸 Processing vision request...")
+                description = await self.vision_pipeline.describe_scene()
+                
+                # Add context based on user's request
+                if "look around" in user_input.lower():
+                    response = f"Looking around, {description.lower()}"
+                elif "in front" in user_input.lower():
+                    response = f"In front of me, {description.lower()}"
+                else:
+                    response = description
+                
+                logger.info(f"👁️ Vision response: '{response}'")
+                
+            except Exception as e:
+                response = f"I'm sorry, I had trouble analyzing the scene. {str(e)}"
+                logger.error(f"Vision request failed: {e}")
+        
+        # Simulate speaking the response (in real mode, this would use TTS)
+        if self.pipeline_mode != PipelineMode.HARDWARE:
+            logger.info(f"🔊 Parvis would say: '{response}'")
+        
+        # Update conversation stats
+        logger.info(f"✅ Vision conversation completed:")
+        logger.info(f"   User: {user_input}")
+        logger.info(f"   Parvis: {response}")
     
     async def start(self):
         """Start the always-on Parvis assistant."""
@@ -177,6 +273,9 @@ class ParvisAssistant:
         if self.speech_pipeline:
             self.speech_pipeline.cleanup()
         
+        if self.vision_pipeline:
+            self.vision_pipeline.cleanup()
+        
         logger.info("Parvis assistant stopped")
     
     def get_status(self) -> dict:
@@ -189,6 +288,8 @@ class ParvisAssistant:
             "is_running": self.is_running,
             "pipeline_mode": self.pipeline_mode.value,
             "hotword_mode": "mock" if self.use_mock_hotword else "real",
+            "vision_enabled": self.enable_vision,
+            "vision_available": self.vision_pipeline is not None,
             "porcupine_available": PORCUPINE_AVAILABLE
         }
         
