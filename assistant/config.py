@@ -20,7 +20,7 @@ class AudioConfig(BaseModel):
 class HotwordConfig(BaseModel):
     """Porcupine hot-word detection configuration."""
     access_key: str = Field(default="", description="Porcupine access key (required for Phase 5)")
-    keyword_paths: List[str] = Field(default=["picovoice_linux.ppn"], description="Keyword model paths")
+    keyword_paths: List[str] = Field(default=["parvis_linux.ppn"], description="Keyword model paths for 'Parvis'")
     sensitivity: float = Field(default=0.5, description="Detection sensitivity (0.0-1.0)")
 
 

@@ -41,8 +41,9 @@ pi-jarvis/
 ✅ **Phase 2 COMPLETE**: Speech-to-Text (Whisper.cpp)  
 ✅ **Phase 3 COMPLETE**: Language Model (TinyLlama 1.1B)  
 ✅ **Phase 4 COMPLETE**: Complete Speech Pipeline  
-🏗️ **Current Phase**: Phase 5 - Hot-word Detection ("Hey Pi")  
-📋 **Next**: Implement wake-word detection for hands-free activation
+✅ **Phase 5 COMPLETE**: Hot-word Detection ("Parvis")  
+🏗️ **Current Phase**: Phase 6 - Computer Vision  
+📋 **Next**: Integrate YOLOv8 camera vision and object detection
 
 ### ✅ Completed Components
 - **System Dependencies**: All build tools, audio libraries, Python packages installed
@@ -50,11 +51,12 @@ pi-jarvis/
 - **Language Model**: llama.cpp built, TinyLlama 1.1B (638MB) model downloaded and ready
 - **Text-to-Speech**: eSpeak TTS engine installed and tested
 - **Complete Speech Pipeline**: **STT → LLM → TTS integration working flawlessly**
+- **"Parvis" Wake Word Detection**: **Always-on assistant with hot-word activation**
 
-### 🎯 Voice Conversation Ready!
-**MAJOR MILESTONE**: Complete voice conversation pipeline tested and working with 100% success rate. Ready for hardware when microphone/speakers are connected.
+### 🎯 Always-On Voice Assistant Ready!
+**MAJOR MILESTONE**: Complete always-on voice assistant working! Says "Parvis" → Assistant activates → Full voice conversation → Resumes listening. Ready for hardware when microphone/speakers connected.
 
-**Progress**: **4/9 phases complete (44%)**
+**Progress**: **5/9 phases complete (56%)**
 
 See `PHASE_STATUS.md` for detailed phase breakdown and `PROJECT_REFERENCE.md` for technical specifications.
 

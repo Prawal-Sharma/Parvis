@@ -5,7 +5,7 @@
 ## 🏁 1. Objective
 
 Build an always-on assistant that:
-- Listens for a hot-word ("Hey Pi"), converts speech to text, runs a small local language model for answers, and speaks back—entirely offline
+- Listens for a hot-word ("Parvis"), converts speech to text, runs a small local language model for answers, and speaks back—entirely offline
 - On demand, captures a camera frame and describes what it sees ("What do you see?") using YOLO object detection
 - Provides basic utility intents (timers, translations, summaries, etc.)
 - Boots automatically as a **systemd** service
