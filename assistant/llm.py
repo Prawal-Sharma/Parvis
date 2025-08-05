@@ -204,16 +204,18 @@ class LlamaCppLLM:
     async def generate(self, prompt: str, max_tokens: int = 256) -> Optional[str]:
         """Generate text using llama.cpp."""
         try:
-            # Prepare command
+            # Prepare command with Pi 4 optimized parameters
             cmd = [
                 str(self.binary_path),
                 "-m", str(self.model_path),
                 "-p", prompt,
                 "-n", str(max_tokens),
+                "-c", "512",  # Context size optimized for Pi 4
+                "-b", "256",  # Batch size optimized for Pi 4
                 "--temp", str(config.llm.temperature),
                 "-t", str(config.llm.threads),
-                "--simple-io",
-                "--log-disable"
+                "--no-conversation",  # Disable interactive mode
+                "--no-display-prompt"  # Don't repeat the prompt in output
             ]
             
             logger.info(f"Generating response with llama.cpp")
@@ -232,15 +234,30 @@ class LlamaCppLLM:
                 logger.error(f"llama.cpp failed: {stderr.decode()}")
                 return None
             
-            # Extract generated text
+            # Extract generated text from llama.cpp output
             output = stdout.decode().strip()
-            if output.startswith(prompt):
-                output = output[len(prompt):].strip()
+            
+            # llama.cpp outputs the full text including prompt, find the generated part
+            if prompt in output:
+                # Split on the prompt and take everything after it
+                parts = output.split(prompt, 1)
+                if len(parts) > 1:
+                    generated_text = parts[1].strip()
+                else:
+                    generated_text = output.strip()
+            else:
+                # If prompt not found, take the last line that contains content
+                lines = [line.strip() for line in output.split('\n') if line.strip()]
+                generated_text = lines[-1] if lines else ""
+            
+            # Clean up any remaining metadata or formatting
+            if generated_text.startswith('llama_perf'):
+                generated_text = ""
             
             elapsed = time.time() - start_time
-            logger.info(f"Generated {len(output)} characters in {elapsed:.2f}s")
+            logger.info(f"Generated {len(generated_text)} characters in {elapsed:.2f}s")
             
-            return output
+            return generated_text if generated_text else None
             
         except Exception as e:
             logger.error(f"Error generating with llama.cpp: {e}")
