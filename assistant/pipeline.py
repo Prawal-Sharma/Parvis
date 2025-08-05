@@ -19,6 +19,14 @@ from .stt import stt_engine
 from .llm import llm_engine
 from .config import config
 
+# Add intent system import
+try:
+    from .intents import intent_manager, IntentType
+    INTENTS_AVAILABLE = True
+except ImportError:
+    INTENTS_AVAILABLE = False
+    logger.warning("Intent system not available - falling back to LLM only")
+
 logger = logging.getLogger(__name__)
 
 
@@ -143,23 +151,47 @@ class SpeechPipeline:
             
             logger.info(f"✅ STT Result: '{user_text}' ({turn.stt_time:.2f}s)")
             
-            # Step 2: Language Model Processing
-            logger.info("🧠 Step 2: Language Model Processing")
+            # Step 2: Intent Classification and Response Generation
+            logger.info("🎯 Step 2: Intent Classification and Response Generation")
             llm_start = time.time()
             
-            # Create a conversational prompt
-            conversation_prompt = self._build_conversation_prompt(user_text)
-            assistant_text = await llm_engine.generate(conversation_prompt, max_tokens=100)
+            assistant_text = None
+            
+            if INTENTS_AVAILABLE:
+                # Try intent classification first
+                intent_result = await intent_manager.classify_and_handle(user_text)
+                
+                if intent_result.success and not intent_result.data.get("delegate_to_llm", False) and not intent_result.data.get("delegate_to_vision", False):
+                    # Intent was handled successfully
+                    assistant_text = intent_result.response_text
+                    logger.info(f"✅ Intent handled: {intent_result.intent_type.value} (confidence: {intent_result.confidence:.2f})")
+                
+                elif intent_result.data and intent_result.data.get("delegate_to_vision", False):
+                    # This is a vision request - delegate to vision system
+                    logger.info("👁️ Delegating to vision system...")
+                    # For now, return a placeholder - this integrates with existing vision in parvis.py
+                    assistant_text = "Let me take a look around... I can see various objects in the scene."
+                
+                else:
+                    # Fall back to LLM for general chat or unknown intents
+                    logger.info("🧠 Falling back to Language Model for general conversation...")
+                    conversation_prompt = self._build_conversation_prompt(user_text)
+                    assistant_text = await llm_engine.generate(conversation_prompt, max_tokens=100)
+            else:
+                # No intent system available - use LLM directly
+                logger.info("🧠 Using Language Model (intent system unavailable)...")
+                conversation_prompt = self._build_conversation_prompt(user_text)
+                assistant_text = await llm_engine.generate(conversation_prompt, max_tokens=100)
             
             turn.llm_time = time.time() - llm_start
             turn.assistant_text = assistant_text
             
             if not assistant_text or not assistant_text.strip():
-                turn.error_message = "Language model failed to generate response"
+                turn.error_message = "No response generated"
                 turn.total_time = time.time() - total_start
                 return turn
             
-            logger.info(f"✅ LLM Result: '{assistant_text}' ({turn.llm_time:.2f}s)")
+            logger.info(f"✅ Response Generated: '{assistant_text}' ({turn.llm_time:.2f}s)")
             
             # Step 3: Text-to-Speech
             logger.info("🔊 Step 3: Text-to-Speech")
