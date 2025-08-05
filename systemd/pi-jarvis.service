@@ -1,7 +1,10 @@
 [Unit]
-Description=Pi-Jarvis Voice Assistant
-After=network.target
-Wants=network.target
+Description=Pi-Jarvis Voice Assistant - Always-on AI Assistant
+Documentation=https://github.com/Prawal-Sharma/Parvis
+After=network.target sound.target
+Wants=network.target sound.target
+StartLimitIntervalSec=60
+StartLimitBurst=3
 
 [Service]
 Type=simple
@@ -9,22 +12,44 @@ User=raspberry
 Group=raspberry
 WorkingDirectory=/home/raspberry/Desktop/Parvis
 Environment=PYTHONPATH=/home/raspberry/Desktop/Parvis
-ExecStart=/usr/bin/python3 -m assistant.main
+Environment=PATH=/home/raspberry/Desktop/Parvis/venv/bin:/usr/local/bin:/usr/bin:/bin
+Environment=VIRTUAL_ENV=/home/raspberry/Desktop/Parvis/venv
+# Use the virtual environment python with all dependencies
+ExecStart=/home/raspberry/Desktop/Parvis/venv/bin/python3 -m assistant.parvis simulation true
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=mixed
+KillSignal=SIGTERM
+TimeoutStartSec=30
+TimeoutStopSec=30
 Restart=always
-RestartSec=10
+RestartSec=15
+
+# Logging configuration
 StandardOutput=journal
 StandardError=journal
+SyslogIdentifier=pi-jarvis
+
+# Health monitoring
+WatchdogSec=60
+NotifyAccess=none
 
 # Security settings
 NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=strict
-ProtectHome=true
-ReadWritePaths=/home/raspberry/Desktop/Parvis/logs /tmp
+ProtectHome=read-only
+ReadWritePaths=/home/raspberry/Desktop/Parvis/logs /home/raspberry/Desktop/Parvis/models /tmp /var/log/pi-jarvis
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictRealtime=true
+SystemCallArchitectures=native
 
-# Resource limits
-MemoryLimit=1G
-CPUQuota=80%
+# Resource limits (relaxed for Pi 4)
+MemoryMax=2G
+TasksMax=200
+LimitNOFILE=2048
 
 [Install]
 WantedBy=multi-user.target
+Alias=parvis.service

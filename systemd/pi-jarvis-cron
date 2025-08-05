@@ -1,0 +1,11 @@
+# Pi-Jarvis Cron Jobs Configuration
+# This file should be copied to /etc/cron.d/pi-jarvis
+
+# Health check every 5 minutes
+*/5 * * * * raspberry /home/raspberry/Desktop/Parvis/systemd/health-check.sh >/dev/null 2>&1
+
+# Daily log cleanup and maintenance at 2:30 AM
+30 2 * * * raspberry /home/raspberry/Desktop/Parvis/systemd/maintenance.sh >/dev/null 2>&1
+
+# Weekly system status report on Sundays at 9:00 AM
+0 9 * * 0 raspberry /home/raspberry/Desktop/Parvis/systemd/status-report.sh >/dev/null 2>&1

@@ -1,0 +1,31 @@
+# Pi-Jarvis Log Rotation Configuration
+# This file should be copied to /etc/logrotate.d/pi-jarvis
+
+/home/raspberry/Desktop/Parvis/logs/*.log {
+    daily
+    missingok
+    rotate 7
+    compress
+    delaycompress
+    notifempty
+    create 0644 raspberry raspberry
+    postrotate
+        # Restart pi-jarvis service to reopen log files
+        /bin/systemctl reload pi-jarvis.service > /dev/null 2>&1 || true
+    endscript
+}
+
+/var/log/pi-jarvis/*.log {
+    daily
+    missingok
+    rotate 30
+    compress
+    delaycompress
+    notifempty
+    create 0644 raspberry raspberry
+    sharedscripts
+    postrotate
+        # Signal systemd journal to flush logs
+        /bin/systemctl kill --signal=SIGUSR1 pi-jarvis.service > /dev/null 2>&1 || true
+    endscript
+}
