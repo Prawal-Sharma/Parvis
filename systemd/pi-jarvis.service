@@ -1,0 +1,30 @@
+[Unit]
+Description=Pi-Jarvis Voice Assistant
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+User=raspberry
+Group=raspberry
+WorkingDirectory=/home/raspberry/Desktop/Parvis
+Environment=PYTHONPATH=/home/raspberry/Desktop/Parvis
+ExecStart=/usr/bin/python3 -m assistant.main
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/home/raspberry/Desktop/Parvis/logs /tmp
+
+# Resource limits
+MemoryLimit=1G
+CPUQuota=80%
+
+[Install]
+WantedBy=multi-user.target

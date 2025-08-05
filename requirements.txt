@@ -1,0 +1,39 @@
+# Pi-Jarvis Python Dependencies
+
+# Core dependencies
+pydantic>=2.0.0          # Configuration management
+asyncio-mqtt>=0.16.0     # Async MQTT (for future expansion)
+
+# Audio processing
+pyaudio>=0.2.11          # Audio I/O
+numpy>=1.24.0            # Numerical computing
+scipy>=1.10.0            # Scientific computing
+
+# Hot-word detection
+pvporcupine>=3.0.0       # Porcupine wake-word detection
+
+# Computer vision
+opencv-python>=4.8.0     # OpenCV for camera
+ultralytics>=8.0.0       # YOLOv8 for object detection
+pillow>=10.0.0           # Image processing
+
+# Text-to-speech
+pyttsx3>=2.90            # TTS interface
+espeak>=1.48             # eSpeak TTS engine
+
+# Development and testing
+pytest>=7.0.0            # Testing framework
+pytest-asyncio>=0.21.0   # Async testing
+black>=23.0.0            # Code formatting
+flake8>=6.0.0            # Linting
+mypy>=1.5.0              # Type checking
+
+# Optional: Advanced TTS
+# piper-tts>=1.0.0        # Alternative TTS engine (if needed)
+
+# Note: Some dependencies may require system packages:
+# - sudo apt install python3-pyaudio portaudio19-dev
+# - sudo apt install espeak espeak-data
+# - sudo apt install libopenblas-dev
+# - sudo apt install ffmpeg
+# - sudo apt install python3-opencv (alternative to pip opencv-python)
