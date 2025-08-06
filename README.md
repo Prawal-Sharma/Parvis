@@ -4,6 +4,8 @@
 
 ## Quick Start
 
+**🎯 New User?** See `QUICKSTART.md` for a 5-minute setup guide!
+
 Pi-Jarvis is an always-on assistant that listens for "Parvis" [[memory:5211612]], processes your speech with local AI models, and responds entirely offline. It features intelligent intent recognition for timers, translations, time queries, weather info, and computer vision - all running as a production systemd service.
 
 ## Features
@@ -62,43 +64,59 @@ pi-jarvis/
 ### 🎯 Production-Ready AI Assistant Complete!
 **MAJOR MILESTONE**: Full production voice + vision assistant operational! Say "Parvis" → Ask "Set a timer for 5 minutes" or "What do you see?" → Get intelligent responses → Continues listening. Complete offline AI assistant running as system service!
 
-**Progress**: **8/9 phases complete (89%)**
+**Progress**: **8.5/9 phases complete (95%)**
 
 See `PHASE_STATUS.md` for detailed phase breakdown and `PROJECT_REFERENCE.md` for technical specifications.
 
 ## Installation
 
-### Quick Production Deployment
+### 🚀 One-Command Installation (Recommended)
 
-1. **Clone the repository**:
+**If you already have the project:** Skip to step 2.
+
+1. **Clone the repository** (if not done):
    ```bash
    git clone https://github.com/Prawal-Sharma/Parvis.git
    cd Parvis
    ```
 
-2. **Install system dependencies**:
+2. **Install everything with one command**:
+   ```bash
+   ./systemd/install-service.sh
+   ```
+
+**That's it!** The installer will:
+- ✅ Check and install system dependencies
+- ✅ Set up Python virtual environment  
+- ✅ Install all Python packages
+- ✅ Configure systemd service for auto-start
+- ✅ Set up health monitoring and log rotation
+- ✅ Test the installation
+- ✅ Start Pi-Jarvis automatically
+
+**Expected result:** "🎉 Pi-Jarvis production deployment complete!"
+
+### Manual Installation (Advanced Users)
+
+If you prefer step-by-step control:
+
+1. **Install system dependencies**:
    ```bash
    sudo apt update
    sudo apt install -y build-essential cmake git portaudio19-dev espeak espeak-data python3-venv python3-pip ffmpeg
    ```
 
-3. **Set up Python environment**:
+2. **Set up Python environment**:
    ```bash
    python3 -m venv venv
    source venv/bin/activate
    pip install -r requirements.txt
    ```
 
-4. **Install as system service**:
+3. **Install as system service**:
    ```bash
    ./systemd/install-service.sh
    ```
-
-The installation script will:
-- Set up the systemd service for auto-start on boot
-- Configure health monitoring and log rotation
-- Test the service installation
-- Provide management commands
 
 ### Manual Testing (Without Hardware)
 
@@ -189,7 +207,7 @@ python -m assistant.parvis simulation true
 
 ## Contributing
 
-This project is **89% complete** (8/9 phases) and ready for community contributions! 
+This project is **95% complete** (8.5/9 phases) and ready for community contributions! 
 
 ### Getting Started
 1. **Read the Documentation**: Start with this README, then explore the comprehensive docs
@@ -224,7 +242,7 @@ Pi-Jarvis includes comprehensive documentation for all users:
 
 ## Project Status
 
-**🎉 PRODUCTION READY**: Pi-Jarvis is a fully operational, production-ready AI assistant running as a stable systemd service with comprehensive monitoring and maintenance.
+**🎉 PRODUCTION READY**: Pi-Jarvis is a fully operational, production-ready voice assistant running as a stable systemd service with comprehensive monitoring and maintenance.
 
 - **89% Complete**: 8 of 9 development phases finished
 - **Production Service**: Running with 99%+ uptime and automated health monitoring
@@ -235,4 +253,4 @@ Pi-Jarvis includes comprehensive documentation for all users:
 
 **MIT License** - Open source, free for personal and commercial use.
 
-This project demonstrates that sophisticated AI assistance can be achieved entirely offline on affordable hardware, enabling privacy-focused, always-available AI systems for everyone.
+This project demonstrates that sophisticated voice assistance can be achieved entirely offline on affordable hardware, enabling privacy-focused, always-available systems for everyone.
